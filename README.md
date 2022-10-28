@@ -1,6 +1,6 @@
 # Hoarder
 
-A simple dotfiles manager.
+A simple dotfiles manager that make things clearly.
 
 ## Installation
 
