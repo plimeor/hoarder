@@ -74,7 +74,7 @@ fn restore() -> Result<(), Box<dyn std::error::Error>> {
         if src.exists() {
             println!("Restoring {:?}", src);
             fs_ext::remove(dest)?;
-            fs_ext::copy(&src, &dest)?;
+            fs_ext::copy(src, dest)?;
         }
     }
     Ok(())

@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 use std::os;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub fn copy(src: &PathBuf, dest: &PathBuf) -> io::Result<()> {
     ensure_dir(dest)?;
@@ -11,8 +11,7 @@ pub fn copy(src: &PathBuf, dest: &PathBuf) -> io::Result<()> {
         return Ok(());
     } else if src.is_dir() {
         src.read_dir()?
-            .filter(|item| item.is_ok())
-            .map(|item| item.unwrap())
+            .filter_map(|item| item.ok())
             .for_each(|item| {
                 let mut dest = dest.clone();
                 dest.push(item.file_name());
@@ -22,7 +21,7 @@ pub fn copy(src: &PathBuf, dest: &PathBuf) -> io::Result<()> {
     Ok(())
 }
 
-pub fn ensure_dir(target: &PathBuf) -> io::Result<()> {
+pub fn ensure_dir(target: &Path) -> io::Result<()> {
     if target.exists() || target.parent().is_none() {
         return Ok(());
     }

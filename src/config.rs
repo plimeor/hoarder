@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::{env, fs};
 
-const HOARDER_ENV: &'static str = "HOARDER";
-const HOARDER_CONFIG: &'static str = "hoarder.json";
+const HOARDER_ENV: &str = "HOARDER";
+const HOARDER_CONFIG: &str = "hoarder.json";
 
 pub type Link = (PathBuf, PathBuf);
 
@@ -37,15 +37,14 @@ impl Config {
         }
     }
 
-    fn check_health(links: &Vec<Link>) {
+    fn check_health(links: &[Link]) {
         let mut links: Vec<String> = links
             .iter()
-            .map(|link| vec![link.0.clone(), link.1.clone()])
-            .flatten()
+            .flat_map(|link| vec![link.0.clone(), link.1.clone()])
             .map(|link| link.to_str().unwrap().to_string())
             .collect();
 
-        links.sort_by(|a, b| a.len().cmp(&b.len()));
+        links.sort_by_key(|a| a.len());
 
         for i in 0..links.len() {
             for j in i + 1..links.len() {
@@ -62,7 +61,7 @@ impl Config {
             panic!("Can not find {:?}", &config_path);
         }
 
-        let content = fs::read_to_string(config_path).unwrap().to_string();
+        let content = fs::read_to_string(config_path).unwrap();
         let values: HashMap<String, HashMap<String, String>> =
             serde_json::from_str(&content).unwrap();
 
@@ -87,11 +86,11 @@ impl Config {
 
     fn get_config_path(hoarder_dir: &PathBuf) -> PathBuf {
         let mut config_path = PathBuf::from(hoarder_dir);
-        config_path.push(&HOARDER_CONFIG);
+        config_path.push(HOARDER_CONFIG);
         config_path
     }
 
     fn root() -> Option<PathBuf> {
-        env::var(&HOARDER_ENV).map(|root| PathBuf::from(&root)).ok()
+        env::var(HOARDER_ENV).map(|root| PathBuf::from(&root)).ok()
     }
 }
